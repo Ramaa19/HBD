@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 🎂</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&family=Dancing+Script:wght@700&display=swap');
+
+  :root {
+    --rose: #e8536a;
+    --rose-light: #fce8ec;
+    --rose-dark: #b53350;
+    --gold: #c9984a;
+    --cream: #fdf6f0;
+    --text: #2d1f2e;
+    --text-muted: #7a5c6e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* TABS */
+  .tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: white;
+    border-bottom: 2px solid var(--rose-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(232,83,106,0.08);
+  }
+  .tab-btn {
+    padding: 14px 28px;
+    border: none;
+    background: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+  .tab-btn.active { color: var(--rose); border-bottom-color: var(--rose); }
+  .tab-btn:hover { color: var(--rose); background: var(--rose-light); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ===== TAB 1: EDITOR ===== */
+  #tab-editor {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  .section-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: var(--rose);
+    margin-bottom: 8px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .editor-block {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    border: 1.5px solid var(--rose-light);
+  }
+
+  .field-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e8d5dc;
+    border-radius: 10px;
+    font-family: 'Lato', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--cream);
+    transition: border 0.2s;
+    outline: none;
+    resize: vertical;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--rose); }
+
+  textarea { min-height: 180px; line-height: 1.7; }
+
+  .photo-upload-area {
+    border: 2px dashed #e8b4bf;
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--rose-light);
+    position: relative;
+  }
+  .photo-upload-area:hover { border-color: var(--rose); background: #fde4e8; }
+  .photo-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-icon { font-size: 36px; margin-bottom: 8px; }
+  .upload-text { font-size: 13px; color: var(--text-muted); }
+
+  .photo-previews {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .photo-thumb {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    background: #f0e0e5;
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-thumb .del-btn {
+    position: absolute;
+    top: 4px; right: 4px;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    font-size: 12px;
+    cursor: pointer;
+    line-height: 22px;
+  }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: var(--rose);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: var(--rose-dark); transform: translateY(-1px); }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 10px 22px;
+    background: white;
+    color: var(--rose);
+    border: 2px solid var(--rose);
+    border-radius: 10px;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { background: var(--rose-light); }
+
+  /* ===== TAB 2: QR CODE ===== */
+  #tab-qr {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    text-align: center;
+  }
+
+  .qr-instructions {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    border: 1.5px solid var(--rose-light);
+    text-align: left;
+  }
+
+  .qr-heart-container {
+    position: relative;
+    display: inline-block;
+    margin: 24px auto;
+  }
+
+  .heart-svg-bg {
+    display: block;
+  }
+
+  #qr-canvas-wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.82);
+    border-radius: 4px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .love-label {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.6rem;
+    color: var(--rose);
+    margin: 12px 0;
+    display: block;
+  }
+
+  /* ===== TAB 3: PREVIEW (the birthday page) ===== */
+  #tab-preview { background: var(--cream); }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 60px 24px 48px;
+    overflow: hidden;
+  }
+  .confetti-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    0%  { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100%{ transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  .hero-greeting {
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .hero-name {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(3rem, 10vw, 5.5rem);
+    color: var(--rose);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .hero-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  /* Photo gallery */
+  .gallery-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+  .gallery-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.2rem;
+    color: var(--rose);
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  .gallery-img {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(232,83,106,0.15);
+    transition: transform 0.3s;
+  }
+  .gallery-img img { width: 100%; height: 100%; object-fit: cover; }
+  .gallery-img:hover { transform: scale(1.03) rotate(-1deg); }
+
+  .no-photos-msg {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 20px;
+    grid-column: 1 / -1;
+  }
+
+  /* Letter section */
+  .letter-section {
+    max-width: 680px;
+    margin: 0 auto 60px;
+    padding: 0 24px;
+  }
+  .letter-wrap {
+    background: white;
+    border-radius: 20px;
+    padding: 48px 52px;
+    border: 1.5px solid var(--rose-light);
+    box-shadow: 0 8px 40px rgba(232,83,106,0.1);
+    position: relative;
+  }
+  .letter-wrap::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    color: var(--rose-light);
+    position: absolute;
+    top: 0; left: 20px;
+    line-height: 1;
+  }
+  .letter-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: var(--rose);
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .letter-body {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+  .letter-signature {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.6rem;
+    color: var(--rose);
+    text-align: right;
+    margin-top: 24px;
+  }
+
+  /* Divider */
+  .heart-divider {
+    text-align: center;
+    color: var(--rose-light);
+    font-size: 22px;
+    letter-spacing: 8px;
+    margin: 20px 0;
+  }
+
+  .footer-bday {
+    text-align: center;
+    padding: 32px;
+    background: var(--rose);
+    color: white;
+  }
+  .footer-bday p { font-family: 'Dancing Script', cursive; font-size: 1.4rem; }
+
+  /* Floaty hearts */
+  .floating-hearts {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 6px;
+    pointer-events: none;
+    z-index: 999;
+  }
+  .fh {
+    font-size: 22px;
+    animation: floatUp 4s ease-in infinite;
+    opacity: 0;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translateY(-160px) scale(1.2); opacity: 0; }
+  }
+  .fh:nth-child(2) { animation-delay: 1.2s; }
+  .fh:nth-child(3) { animation-delay: 2.6s; }
+
+  /* Step indicator */
+  .step-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--rose);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-text { font-size: 14px; color: var(--text); }
+
+  /* Responsive */
+  @media (max-width: 560px) {
+    .letter-wrap { padding: 32px 24px; }
+    .tab-btn { padding: 12px 14px; font-size: 12px; letter-spacing: 0.5px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('editor')">✏️ Buat</button>
+  <button class="tab-btn" onclick="switchTab('preview')">👁️ Preview</button>
+  <button class="tab-btn" onclick="switchTab('qr')">💌 QR Love</button>
+</nav>
+
+<!-- ===== TAB: EDITOR ===== -->
+<div id="tab-editor" class="tab-panel active">
+  <div class="section-title">Buat Website Ulang Tahun</div>
+  <div class="section-sub">Isi formulir di bawah, lalu lihat hasilnya di tab Preview!</div>
+
+  <!-- Nama Penerima -->
+  <div class="editor-block">
+    <label class="field-label">Nama Penerima (yang berulang tahun)</label>
+    <input type="text" id="inp-name" placeholder="Contoh: Aisyah, Budi, Sayang..." oninput="syncPreview()">
+  </div>
+
+  <!-- Foto -->
+  <div class="editor-block">
+    <label class="field-label">Foto Kenangan (bisa pilih banyak)</label>
+    <div class="photo-upload-area">
+      <input type="file" id="photo-input" accept="image/*" multiple onchange="handlePhotos(event)">
+      <div class="upload-icon">📸</div>
+      <div class="upload-text">Klik untuk pilih foto<br><small>JPG, PNG, WEBP</small></div>
+    </div>
+    <div class="photo-previews" id="photo-previews"></div>
+  </div>
+
+  <!-- Surat -->
+  <div class="editor-block">
+    <label class="field-label">Surat / Pesan untuk Penerima</label>
+    <textarea id="inp-letter" placeholder="Tulis pesan ulang tahun dari hati kamu di sini...&#10;&#10;Contoh:&#10;Selamat ulang tahun sayang! Hari ini aku ingin mengingatkanmu betapa berharganya kamu dalam hidupku..." oninput="syncPreview()"></textarea>
+  </div>
+
+  <!-- Dari -->
+  <div class="editor-block">
+    <label class="field-label">Dari (nama pengirim)</label>
+    <input type="text" id="inp-from" placeholder="Nama kamu..." oninput="syncPreview()">
+  </div>
+
+  <button class="btn-primary" onclick="switchTab('preview')">✨ Lihat Preview Website</button>
+  <br><br>
+  <button class="btn-primary" style="background: #7c4dff; margin-top: 4px;" onclick="switchTab('qr')">💌 Generate QR Love Code</button>
+</div>
+
+<!-- ===== TAB: PREVIEW ===== -->
+<div id="tab-preview" class="tab-panel">
+  <!-- Confetti -->
+  <div class="confetti-bg" id="confetti-bg"></div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <p class="hero-greeting">🎂 Selamat Ulang Tahun 🎂</p>
+    <h1 class="hero-name" id="prev-name">Nama Kamu</h1>
+    <p class="hero-tagline">Semoga hari ini seindah senyummu 🌸</p>
+  </div>
+
+  <div class="heart-divider">♥ ♥ ♥</div>
+
+  <!-- Gallery -->
+  <div class="gallery-section">
+    <h2 class="gallery-title">📷 Foto Terindah</h2>
+    <div class="gallery-grid" id="prev-gallery">
+      <div class="no-photos-msg">Belum ada foto. Tambahkan di tab Buat!</div>
+    </div>
+  </div>
+
+  <div class="heart-divider">♥ ♥ ♥</div>
+
+  <!-- Letter -->
+  <div class="letter-section">
+    <div class="letter-wrap">
+      <h2 class="letter-title">💌 Surat Untukmu</h2>
+      <div class="letter-body" id="prev-letter">Tuliskan pesanmu di tab Buat...</div>
+      <div class="letter-signature" id="prev-from">— Dengan cinta ♥</div>
+    </div>
+  </div>
+
+  <div class="footer-bday">
+    <p id="prev-footer-name">Selamat Ulang Tahun! 🎉</p>
+    <p style="font-family: Lato, sans-serif; font-size: 13px; margin-top: 6px; opacity: 0.8;">Dibuat dengan ❤️ khusus untukmu</p>
+  </div>
+
+  <!-- Floating hearts -->
+  <div class="floating-hearts">
+    <span class="fh">💕</span>
+    <span class="fh">🌸</span>
+    <span class="fh">💖</span>
+  </div>
+</div>
+
+<!-- ===== TAB: QR LOVE ===== -->
+<div id="tab-qr" class="tab-panel">
+  <div style="max-width: 600px; margin: 0 auto; padding: 40px 24px; text-align: center;">
+
+    <div class="section-title">QR Code Berbentuk Love 💝</div>
+    <div class="section-sub" style="text-align:center;">Scan QR ini untuk membuka halaman ulang tahun!</div>
+
+    <div class="qr-instructions">
+      <div class="step-row"><span class="step-num">1</span><span class="step-text">Isi nama & pesan di tab <strong>Buat</strong></span></div>
+      <div class="step-row"><span class="step-num">2</span><span class="step-text">Klik tombol di bawah untuk generate QR</span></div>
+      <div class="step-row"><span class="step-num">3</span><span class="step-text">Screenshot QR berbentuk ❤️ ini, kirim ke penerimamu</span></div>
+      <div class="step-row"><span class="step-num">4</span><span class="step-text">Mereka scan QR → terbuka halaman kejutan!</span></div>
+      <br>
+      <p style="font-size:12px; color:var(--text-muted);">💡 QR ini mengarah ke versi online halaman ini. Untuk mengirimnya, kamu bisa simpan file HTML ini ke hosting gratis seperti Netlify Drop, lalu masukkan URL-nya di bawah.</p>
+    </div>
+
+    <label class="field-label" style="text-align:left; display:block; margin-bottom:6px;">URL Website (isi jika sudah dihosting, atau pakai link demo):</label>
+    <input type="text" id="qr-url" value="https://your-birthday-site.netlify.app" style="margin-bottom: 14px;">
+
+    <button class="btn-primary" onclick="generateHeartQR()">💝 Generate QR Berbentuk Love</button>
+
+    <div id="qr-output" style="margin-top: 32px; display: none;">
+      <span class="love-label">Scan untuk membuka hadiah kejutan! ✨</span>
+
+      <div class="qr-heart-container">
+        <!-- Heart SVG clipping mask -->
+        <svg class="heart-svg-bg" width="340" height="320" viewBox="0 0 340 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="heart-clip">
+              <path d="M170,270 C170,270 20,170 20,90 C20,45 55,15 95,15 C125,15 150,35 170,55 C190,35 215,15 245,15 C285,15 320,45 320,90 C320,170 170,270 170,270 Z"/>
+            </clipPath>
+            <filter id="soft-shadow">
+              <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#e8536a" flood-opacity="0.35"/>
+            </filter>
+          </defs>
+          <!-- Pink heart glow bg -->
+          <path d="M170,270 C170,270 20,170 20,90 C20,45 55,15 95,15 C125,15 150,35 170,55 C190,35 215,15 245,15 C285,15 320,45 320,90 C320,170 170,270 170,270 Z"
+                fill="#ffe0e6" filter="url(#soft-shadow)"/>
+          <!-- QR clipped to heart -->
+          <g clip-path="url(#heart-clip)">
+            <rect width="340" height="320" fill="white"/>
+            <foreignObject x="60" y="42" width="220" height="220">
+              <div xmlns="http://www.w3.org/1999/xhtml" id="qr-canvas-inner" style="width:220px;height:220px;"></div>
+            </foreignObject>
+          </g>
+          <!-- Heart border -->
+          <path d="M170,270 C170,270 20,170 20,90 C20,45 55,15 95,15 C125,15 150,35 170,55 C190,35 215,15 245,15 C285,15 320,45 320,90 C320,170 170,270 170,270 Z"
+                fill="none" stroke="#e8536a" stroke-width="3.5"/>
+          <!-- Sparkles -->
+          <text x="22" y="30" font-size="18" fill="#e8536a" opacity="0.7">✨</text>
+          <text x="298" y="30" font-size="18" fill="#e8536a" opacity="0.7">✨</text>
+          <text x="148" y="298" font-size="14" fill="#e8536a" font-family="Dancing Script, cursive">❤</text>
+        </svg>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <button class="btn-secondary" onclick="downloadQR()">⬇️ Download QR (Screenshot)</button>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">Klik kanan → Simpan Gambar, atau tekan tombol di atas</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── State ──
+const photos = [];
+let qrInstance = null;
+
+// ── Tab switching ──
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const idx = {editor:0, preview:1, qr:2}[id];
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  if (id === 'preview') startConfetti();
+}
+
+// ── Sync preview ──
+function syncPreview() {
+  const name = document.getElementById('inp-name').value || 'Nama Kamu';
+  const letter = document.getElementById('inp-letter').value || 'Tuliskan pesanmu di tab Buat...';
+  const from = document.getElementById('inp-from').value || '';
+
+  document.getElementById('prev-name').textContent = name;
+  document.getElementById('prev-letter').textContent = letter;
+  document.getElementById('prev-from').textContent = from ? '— ' + from + ' ♥' : '— Dengan cinta ♥';
+  document.getElementById('prev-footer-name').textContent = 'Selamat Ulang Tahun, ' + name + '! 🎉';
+}
+
+// ── Photos ──
+function handlePhotos(e) {
+  const files = Array.from(e.target.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      photos.push(ev.target.result);
+      renderThumbs();
+      renderGallery();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderThumbs() {
+  const wrap = document.getElementById('photo-previews');
+  wrap.innerHTML = photos.map((src, i) => `
+    <div class="photo-thumb">
+      <img src="${src}" alt="foto">
+      <button class="del-btn" onclick="removePhoto(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removePhoto(i) {
+  photos.splice(i, 1);
+  renderThumbs();
+  renderGallery();
+}
+
+function renderGallery() {
+  const g = document.getElementById('prev-gallery');
+  if (!photos.length) {
+    g.innerHTML = '<div class="no-photos-msg">Belum ada foto. Tambahkan di tab Buat!</div>';
+    return;
+  }
+  g.innerHTML = photos.map(src => `
+    <div class="gallery-img"><img src="${src}" alt="kenangan"></div>`).join('');
+}
+
+// ── Confetti ──
+function startConfetti() {
+  const bg = document.getElementById('confetti-bg');
+  if (bg.childElementCount > 5) return;
+  const colors = ['#e8536a','#f7a8b8','#c9984a','#f5d78e','#9b5de5','#ffffff'];
+  for (let i = 0; i < 28; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      left: ${Math.random()*100}%;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration: ${3+Math.random()*4}s;
+      animation-delay: ${Math.random()*4}s;
+      width: ${6+Math.random()*8}px;
+      height: ${6+Math.random()*8}px;
+      border-radius: ${Math.random()>0.5?'50%':'2px'};
+    `;
+    bg.appendChild(c);
+  }
+}
+
+// ── QR Code ──
+function generateHeartQR() {
+  const url = document.getElementById('qr-url').value.trim() || window.location.href;
+  const wrap = document.getElementById('qr-canvas-inner');
+  wrap.innerHTML = '';
+
+  if (qrInstance) qrInstance.clear();
+  qrInstance = new QRCode(wrap, {
+    text: url,
+    width: 220,
+    height: 220,
+    colorDark: '#b53350',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  document.getElementById('qr-output').style.display = 'block';
+  document.getElementById('qr-output').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadQR() {
+  const svg = document.querySelector('#qr-output svg');
+  const data = new XMLSerializer().serializeToString(svg);
+  const blob = new Blob([data], { type: 'image/svg+xml' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'birthday-qr-love.svg';
+  a.click();
+}
+
+// init
+syncPreview();
+</script>
+</body>
+</html>
